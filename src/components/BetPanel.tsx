@@ -1,8 +1,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { useWallet } from '@/lib/walletUtils';
+import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, SignalHigh, SignalMedium, SignalLow } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -12,7 +11,7 @@ const BetPanel = () => {
   const [betAmount, setBetAmount] = useState<string>('');
   const [difficulty, setDifficulty] = useState<string>('medium');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { walletInfo } = useWallet();
+  const { wallet } = useWallet();
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Only allow numeric input with decimal point
@@ -23,7 +22,7 @@ const BetPanel = () => {
   };
   
   const handleSubmit = () => {
-    if (!walletInfo.isConnected) {
+    if (!wallet.isConnected) {
       toast.error('Please connect your wallet first');
       return;
     }
@@ -33,7 +32,7 @@ const BetPanel = () => {
       return;
     }
     
-    if (parseFloat(betAmount) > walletInfo.balance) {
+    if (parseFloat(betAmount) > wallet.balance) {
       toast.error('Insufficient balance');
       return;
     }
@@ -113,8 +112,8 @@ const BetPanel = () => {
               value={betAmount}
               onChange={handleInputChange}
               placeholder="0.00"
-              className="input-primary w-full"
-              disabled={!walletInfo.isConnected || isSubmitting}
+              className="input-primary w-full neon-border"
+              disabled={!wallet.isConnected || isSubmitting}
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
               <span className="text-tcore-blue font-medium">TCORE</span>
@@ -133,7 +132,7 @@ const BetPanel = () => {
         
         <Button
           onClick={handleSubmit}
-          disabled={!walletInfo.isConnected || isSubmitting || !betAmount || parseFloat(betAmount) <= 0}
+          disabled={!wallet.isConnected || isSubmitting || !betAmount || parseFloat(betAmount) <= 0}
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
@@ -146,7 +145,7 @@ const BetPanel = () => {
           )}
         </Button>
         
-        {!walletInfo.isConnected && (
+        {!wallet.isConnected && (
           <p className="text-center text-xs text-gray-400 mt-2">
             Please connect your wallet to place a bet
           </p>

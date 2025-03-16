@@ -13,6 +13,7 @@ export interface Wallet {
   balance: number;
   isConnected: boolean;
   chainId: number;
+  walletAdd: string;
 }
 
 export const useWallet = () => {
@@ -25,6 +26,7 @@ export const useWallet = () => {
   const wallet: Wallet = {
     address: address ? `${address.slice(0, 5)}...${address.slice(-3)}` : "",
     balance: balanceData ? parseFloat(balanceData.formatted) : 0,
+    walletAdd: address ?? "",
     isConnected,
     chainId,
   };
@@ -43,6 +45,7 @@ export const useWallet = () => {
       toast.error("failed to connect, please try again");
     }
   };
+
   const handleDisconnect = async () => {
     try{
         disconnect()

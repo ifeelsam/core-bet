@@ -1,10 +1,10 @@
+"use client";
 import BetPanel from "@/components/BetPanel";
 import Footer from "@/components/Footer";
 import GamePlaceholder from "@/components/GamePlaceholder";
-import { Header } from "@radix-ui/react-accordion";
 import { useState, useEffect } from "react";
-export default function Index() {
-  const { walletInfo } = useWallet();
+
+export default function Page() {
   const [gameSelected, setGameSelected] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
 
@@ -31,11 +31,10 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col min-w-screen gradient-bg">
-      <Header />
+    <div className="min-h-screen flex flex-col gradient-bg ">
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 overflow-hidden">
         {!gameSelected ? (
           // Welcome Screen - Before Game Selection
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -82,7 +81,7 @@ export default function Index() {
           </section>
         ) : (
           // Two-Column Layout - After Game Selection
-          <section className="py-20 px-4 md:px-6 min-h-screen min-w-screen">
+          <section className="py-20 px-4 md:px-6 min-h-screen">
             <div className="max-w-7xl mx-auto h-[calc(100vh-12rem)]">
               <div className="grid grid-cols-1 md:grid-cols-5 gap-6 h-full">
                 {/* Left Column - Bet Panel */}

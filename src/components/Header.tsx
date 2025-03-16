@@ -1,12 +1,11 @@
-
-import { useState, useEffect } from 'react';
-import WalletAdapter from './WalletAdapter';
-import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import WalletAdapter from "./WalletAdapter";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
-  
+
   // Add shadow when scrolled
   useEffect(() => {
     const handleScroll = () => {
@@ -16,16 +15,16 @@ const Header = () => {
         setScrolled(false);
       }
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    
+
+    window.addEventListener("scroll", handleScroll);
+
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <header 
+    <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 py-4 px-6 md:px-10 transition-all duration-300",
         "bg-tcore-darker/50 backdrop-blur-md border-b border-white/5",
@@ -33,15 +32,15 @@ const Header = () => {
       )}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center">
-        <Link to="/">
-          <div className="text-2xl font-extrabold font-montserrat tracking-tight">
-            <span className="text-tcore-blue">Core</span>
-            <span className="text-white">Bet</span>
+        <Link href="/">
+          <div className="flex items-center">
+            <div className="text-2xl font-extrabold font-montserrat tracking-tight">
+              <span className="text-tcore-blue">Core</span>
+              <span className="text-white">Bet</span>
+            </div>
           </div>
-          </Link>
-        </div>
-        
+        </Link>
+
         <WalletAdapter />
       </div>
     </header>
