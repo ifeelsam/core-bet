@@ -81,7 +81,7 @@ const BetPanel = () => {
             <SelectTrigger id="difficulty" className="w-full bg-black/30 border-white/10">
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className='bg-black '>
               <SelectItem value="easy" className="flex items-center gap-2">
                 <SignalLow className="h-4 w-4 text-green-400" />
                 <span>Easy (1.5x)</span>
@@ -101,7 +101,7 @@ const BetPanel = () => {
         <div>
           <label 
             htmlFor="betAmount" 
-            className="block text-sm font-medium mb-2 text-gray-300"
+            className="block text-sm font-medium mb-2 text-gray-300 border-white/10"
           >
             Bet Amount (TCORE)
           </label>
@@ -112,7 +112,7 @@ const BetPanel = () => {
               value={betAmount}
               onChange={handleInputChange}
               placeholder="0.00"
-              className="input-primary w-full neon-border"
+              className="input-primary w-full border-white/10 focus:neon-border"
               disabled={!wallet.isConnected || isSubmitting}
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
@@ -133,7 +133,7 @@ const BetPanel = () => {
         <Button
           onClick={handleSubmit}
           disabled={!wallet.isConnected || isSubmitting || !betAmount || parseFloat(betAmount) <= 0}
-          className="btn-primary w-full flex items-center justify-center gap-2"
+          className="bg-tcore-blue/90 w-full flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-tcore-dark-text"></div>

@@ -52,6 +52,17 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
+        tcore: {
+          dark: 'var(--color-tcore-dark)',
+          darker: 'var(--color-tcore-darker)',
+          blue: 'var(--color-tcore-blue)',
+          'blue-dark': 'var(--color-tcore-blue-dark)',
+          green: 'var(--color-tcore-green)',
+          'light-text': 'var(--color-tcore-light-text)',
+          'dark-text': 'var(--color-tcore-dark-text)',
+          'gradient-blue': 'var(--color-tcore-blue)',
+          'gradient-purple': 'var(--color-tcore-blue-dark)',
+        },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
@@ -62,15 +73,7 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))'
         },
-        tcore: {
-          dark: '#121212',
-          darker: '#0A0A0A',
-          blue: '#00E0FF',
-          'blue-dark': '#0084FF',
-          green: '#39FF14',
-          'light-text': '#F5F5F5',
-          'dark-text': '#121212',
-        }
+  
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -158,5 +161,4 @@ export default {
       }
     }
   },
-  plugins: [require("tailwindcss-animate")],
 } satisfies Config;

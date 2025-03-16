@@ -53,7 +53,7 @@ const WalletAdapter = () => {
     <div className="relative">
       <div
         className={cn(
-          "flex items-center gap-2 py-2 px-4 rounded-lg cursor-pointer transition-all duration-300",
+          "flex items-center gap-2 py-3 px-4 rounded-lg cursor-pointer transition-all duration-300",
           "glass-card hover:neon-border animate-blur-in"
         )}
         onClick={toggleDropdown}
@@ -64,7 +64,7 @@ const WalletAdapter = () => {
           <span className="font-medium">{wallet.address}</span>
         </div>
         <div className="flex flex-col items-end ml-2">
-          <span className="text-xs text-gray-400">Balance</span>
+          {/* <span className="text-xs text-gray-400">Balance</span> */}
           <div className="flex items-center">
             <span className="font-medium text-tcore-blue">
               {wallet.balance.toFixed(3)} CORE
