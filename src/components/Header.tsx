@@ -48,3 +48,28 @@ const Header = () => {
 };
 
 export default Header;
+function calculateMinesReturn({
+  betAmount,
+  mines,
+  safeCount,
+  totalTiles = 25,
+}: MinesReturnInput): number {
+  // Calculate the number of safe tiles available in the grid.
+  const safeTiles = totalTiles - mines;
+
+  // Start with a base multiplier of 1.
+  let multiplier = 1;
+
+  // For each safe tile uncovered, boost the multiplier.
+  // The idea: the "fair" multiplier for a safe pick equals the inverse chance of getting a safe pick.
+  // That chance at the i-th pick is (safeTiles - i) / (totalTiles - i).
+  for (let i = 0; i < safeCount; i++) {
+    multiplier *= (totalTiles - i) / (safeTiles - i);
+  }
+
+  // Optionally adjust for a house edge (e.g., a 1% fee, giving around 99% RTP):
+  multiplier *= 0.99;
+
+  // The potential return is simply the wager multiplied by our computed multiplier.
+  return betAmount * multiplier;
+}

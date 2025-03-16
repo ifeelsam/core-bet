@@ -15,7 +15,8 @@ import { Input } from "@/components/ui/input";
 
 const BetPanel = () => {
   const [betAmount, setBetAmount] = useState<string>("");
-  const [difficulty, setDifficulty] = useState<string>("medium");
+  const [mineCount, setMineCount] = useState<string>("0");
+  const [profitMultiplier, setProfitMultiplier] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { wallet } = useWallet();
 
@@ -47,23 +48,28 @@ const BetPanel = () => {
     // Simulate API call
     setTimeout(() => {
       toast.success("Bet placed successfully!", {
-        description: `You've placed a ${difficulty} difficulty bet of ${betAmount} TCORE`,
+        description: `You've placed a ${mineCount} difficulty bet of ${betAmount} TCORE`,
       });
       setBetAmount("");
       setIsSubmitting(false);
     }, 1500);
   };
+  const totalTiles = 25;
+  const safeTiles = totalTiles - Number(mineCount);
+  const mineCounts = Number(mineCount);
 
-  const multipliers = {
-    easy: 1.5,
-    medium: 2,
-    hard: 3,
-  };
 
-  const selectedMultiplier =
-    multipliers[difficulty as keyof typeof multipliers] || 2;
+  useEffect(() => {
+    let baseMultiplier = 1.0;
+    for (let i = 1; i < Number(mineCount); i++) {
+      baseMultiplier += 0.03;
+    }
+    setProfitMultiplier(baseMultiplier);
+  }, [mineCount]);
+
+
   const potentialReturn = betAmount
-    ? parseFloat(betAmount) * selectedMultiplier
+    ? parseFloat(betAmount) * profitMultiplier
     : 0;
 
   return (
@@ -80,7 +86,7 @@ const BetPanel = () => {
           >
             No. of Mines
           </label>
-          <Select value={difficulty} onValueChange={setDifficulty}>
+          <Select value={mineCount} onValueChange={setMineCount}>
             <SelectTrigger
               id="difficulty"
               className="w-full bg-black/30 border-white/10"
@@ -88,7 +94,7 @@ const BetPanel = () => {
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
             <SelectContent className="bg-black flex justify-center">
-              {Array.from({ length: 25 }, (_, i) => {
+              {Array.from({ length: 24 }, (_, i) => {
                 const num = i + 1;
                 return (
                   <SelectItem
@@ -109,7 +115,7 @@ const BetPanel = () => {
             htmlFor="betAmount"
             className="block text-sm font-medium mb-2 text-gray-300 border-white/10"
           >
-            Bet Amount (TCORE)
+            Bet Amount ({profitMultiplier.toFixed(2)}x)
           </label>
           <div className="relative">
             <Input
@@ -131,7 +137,7 @@ const BetPanel = () => {
           <div className="flex justify-between items-center px-4 py-3 bg-tcore-blue/5 rounded-lg border border-tcore-blue/20">
             <span className="text-sm text-gray-300">Potential Return:</span>
             <span className="font-medium text-tcore-blue">
-              {potentialReturn.toFixed(3)} TCORE
+              {potentialReturn.toFixed(2)} TCORE
             </span>
           </div>
         )}
@@ -165,8 +171,6 @@ const BetPanel = () => {
     </div>
   );
 };
-
-
 
 function GameGrid() {
   const [tiles, setTiles] = useState(
