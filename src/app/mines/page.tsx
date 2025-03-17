@@ -12,7 +12,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
+const constractId = "0xA0b8C076d6dB3F355DedA352b5098f4a8E1A5B9F";
 const BetPanel = () => {
   const [betAmount, setBetAmount] = useState<string>("");
   const [mineCount, setMineCount] = useState<string>("0");
