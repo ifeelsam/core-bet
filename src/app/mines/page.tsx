@@ -54,9 +54,6 @@ const BetPanel = () => {
       setIsSubmitting(false);
     }, 1500);
   };
-  const totalTiles = 25;
-  const safeTiles = totalTiles - Number(mineCount);
-  const mineCounts = Number(mineCount);
 
 
   useEffect(() => {
