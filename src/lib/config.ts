@@ -75,14 +75,3 @@ export const config = createConfig({
     }
 
 })
-
-// export const config = createConfig({
-//     chains: [coreDaoTestnet, mainnet, coreDao],
-//     transports: {
-//         [mainnet.id]: http(),
-//         [coreDao.id] : http(),
-//         [coreDaoTestnet.id]: http(),
-//         [coreDaoTestnet.id]: http()
-//     }
-
-// })
