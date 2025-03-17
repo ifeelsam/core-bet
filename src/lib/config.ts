@@ -1,6 +1,5 @@
 import { defineChain } from "viem";
 import {createConfig, http} from "wagmi"
-import {mainnet, coreDao} from "wagmi/chains"
 import { injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const projectId = 'df1b443fd552341b785dd2ba56fbae1e';
@@ -68,14 +67,3 @@ export const config = createConfig({
     }
 
 })
-
-// export const config = createConfig({
-//     chains: [coreDaoTestnet, mainnet, coreDao],
-//     transports: {
-//         [mainnet.id]: http(),
-//         [coreDao.id] : http(),
-//         [coreDaoTestnet.id]: http(),
-//         [coreDaoTestnet.id]: http()
-//     }
-
-// })
