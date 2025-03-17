@@ -1,6 +1,6 @@
 import { defineChain } from "viem";
 import {createConfig, http} from "wagmi"
-import {mainnet, coreDao, sepolia} from "wagmi/chains"
+// import {mainnet, coreDao, sepolia} from "wagmi/chains"
 import { injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const projectId = 'df1b443fd552341b785dd2ba56fbae1e';
