@@ -2,8 +2,8 @@
 import BetPanel from "@/components/BetPanel";
 import Footer from "@/components/Footer";
 import GamePlaceholder from "@/components/GamePlaceholder";
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import { redirect } from 'next/navigation'
 
 export default function Page() {
   const [gameSelected, setGameSelected] = useState(false);
@@ -26,10 +26,6 @@ export default function Page() {
     };
   }, []);
 
-  const handleGameSelect = (gameTitle: string) => {
-    setSelectedGame(gameTitle);
-    setGameSelected(true);
-  };
 
   return (
     <div className="min-h-screen flex flex-col gradient-bg ">
@@ -61,22 +57,20 @@ export default function Page() {
                   Featured Games
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <Link href={"/mines"}>
                   <GamePlaceholder
                     title="Mines"
                     index={0}
-                    onSelect={() => handleGameSelect("Mines")}
+                    onSelect={() => redirect("/mines")}
                   />
-                  </Link>
                   <GamePlaceholder
-                    title="Game 2"
+                    title="Plinko"
                     index={1}
-                    onSelect={() => handleGameSelect("Game 2")}
+                    onSelect={() => redirect("/pliko")}
                   />
                   <GamePlaceholder
-                    title="Game 3"
+                    title="Dice Game"
                     index={2}
-                    onSelect={() => handleGameSelect("Game 3")}
+                    onSelect={() => redirect("/dice")}
                   />
                 </div>
               </div>

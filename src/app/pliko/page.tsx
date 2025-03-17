@@ -1,4 +1,5 @@
 "use client"
+import React from "react";
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useWallet } from '@/hooks/useWallet';
@@ -81,15 +82,15 @@ const BetPanel = () => {
               <SelectValue placeholder="Select difficulty" />
             </SelectTrigger>
             <SelectContent className='bg-black '>
-              <SelectItem value="easy" className="flex items-center gap-2">
+              <SelectItem value="easy" className="flex items-center gap-2 focus:bg-gray-700">
                 <SignalLow className="h-4 w-4 text-green-400" />
                 <span>Easy (1.5x)</span>
               </SelectItem>
-              <SelectItem value="medium" className="flex items-center gap-2">
+              <SelectItem value="medium" className="flex items-center gap-2 focus:bg-gray-700">
                 <SignalMedium className="h-4 w-4 text-yellow-400" />
                 <span>Medium (2x)</span>
               </SelectItem>
-              <SelectItem value="hard" className="flex items-center gap-2">
+              <SelectItem value="hard" className="flex items-center gap-2 focus:bg-gray-700">
                 <SignalHigh className="h-4 w-4 text-red-400" />
                 <span>Hard (3x)</span>
               </SelectItem>
@@ -154,4 +155,31 @@ const BetPanel = () => {
   );
 };
 
-export default BetPanel;
+export default function Plikoo() {
+  return (
+    <div className="min-h-screen flex flex-col gradient-bg ">
+      <main className="flex-1 overflow-hidden">
+        <section className="py-32 px-4 md:px-6 min-h-screen">
+          <div className="max-w-7xl mx-auto h-[calc(100vh-12rem)]">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 h-full">
+              {/* Left Column - Bet Panel */}
+              <div className="md:col-span-2 h-full">
+                <BetPanel />
+              </div>
+
+              {/* Right Column - Game Area */}
+              <div className="md:col-span-3 h-full flex items-center justify-center glass-card rounded-xl overflow-hidden">
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-tcore-blue mb-4"></h2>
+                    <p className="text-gray-400">Game content will load here</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
