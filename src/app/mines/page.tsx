@@ -434,7 +434,7 @@ function GameGrid() {
           ></div>
           {/* Main Tile */}
           <div
-            className={`relative z-10 w-full h-full flex items-center justify-center rounded-lg transition-transform duration-300 ${
+            className={`absolute z-10 w-full h-full flex items-center justify-center rounded-lg transition-transform duration-300 ${
               tile.clicked
                 ? tile.mine
                   ? "bg-red-500" // Mine
