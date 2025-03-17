@@ -1,11 +1,11 @@
 import { defineChain } from "viem";
 import {createConfig, http} from "wagmi"
-import {mainnet, coreDao} from "wagmi/chains"
+import {mainnet, coreDao, sepolia} from "wagmi/chains"
 import { injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const projectId = 'df1b443fd552341b785dd2ba56fbae1e';
 
-export const coreDaoTestnet = defineChain({
+export const coreDaoTestnet =/*#__PURE__*/ defineChain({
   id: 1114,
   name: 'Core Blockchain Testnet2',
   nativeCurrency: {
@@ -17,9 +17,9 @@ export const coreDaoTestnet = defineChain({
     default: {
       http: ['https://rpc.test2.btcs.network'],
     },
-    public: {
-      http: ['https://rpc.test2.btcs.network'],
-    },
+    // public: {
+    //   http: ['https://rpc.test2.btcs.network'],
+    // },
   },
   blockExplorers: {
     default: {
@@ -27,6 +27,13 @@ export const coreDaoTestnet = defineChain({
       url: 'https://scan.test2.btcs.network',
     },
   },
+  // contracts: {
+  //   multicall3: {
+  //     address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  //     blockCreated: 1847951,
+
+  //   }
+  // },
   testnet: true,
 });
 

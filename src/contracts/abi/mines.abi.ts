@@ -1,6 +1,13 @@
 
-export const CONTRACT_ADDRESS = "0xA0b8C076d6dB3F355DedA352b5098f4a8E1A5B9F";
+export const CONTRACT_ADDRESS = "0xD65836FC721c5F56079Ff40528A04420C133bC38";
 export const abi = [
+	{
+		"inputs": [],
+		"name": "cashOut",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -122,6 +129,58 @@ export const abi = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "_mineCount",
+				"type": "uint8"
+			}
+		],
+		"name": "placeBet",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "_tileIndex",
+				"type": "uint8"
+			}
+		],
+		"name": "revealTile",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint16",
+				"name": "_feePercentage",
+				"type": "uint16"
+			}
+		],
+		"name": "setHouseFeePercentage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -147,56 +206,34 @@ export const abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "GRID_SIZE",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
 			}
 		],
-		"stateMutability": "view",
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "MAX_FEE",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "uint16",
-				"name": "",
-				"type": "uint16"
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "withdrawFees",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "MAX_MINES",
-		"outputs": [
-			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "SCALING_FACTOR",
-		"outputs": [
-			{
-				"internalType": "uint16",
-				"name": "",
-				"type": "uint16"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
+		"stateMutability": "payable",
+		"type": "receive"
 	},
 	{
 		"inputs": [
@@ -261,13 +298,6 @@ export const abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "cashOut",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -322,34 +352,71 @@ export const abi = [
 		"name": "getGameStatus",
 		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "betAmount",
-				"type": "uint256"
-			},
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "betAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "mineCount",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "seed",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "revealedCount",
+						"type": "uint8"
+					},
+					{
+						"components": [
+							{
+								"internalType": "bool",
+								"name": "actual_value",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "isreveal",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct MinesGame.Tile[25]",
+						"name": "revealed",
+						"type": "tuple[25]"
+					},
+					{
+						"internalType": "bool",
+						"name": "active",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "cashed",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct MinesGame.Game",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "GRID_SIZE",
+		"outputs": [
 			{
 				"internalType": "uint8",
-				"name": "mineCount",
+				"name": "",
 				"type": "uint8"
-			},
-			{
-				"internalType": "uint8",
-				"name": "revealedCount",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bool",
-				"name": "active",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "cashed",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "currentReward",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -394,6 +461,32 @@ export const abi = [
 	},
 	{
 		"inputs": [],
+		"name": "MAX_FEE",
+		"outputs": [
+			{
+				"internalType": "uint16",
+				"name": "",
+				"type": "uint16"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_MINES",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
@@ -404,87 +497,5 @@ export const abi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "_mineCount",
-				"type": "uint8"
-			}
-		],
-		"name": "placeBet",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "_tileIndex",
-				"type": "uint8"
-			}
-		],
-		"name": "revealTile",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint16",
-				"name": "_feePercentage",
-				"type": "uint16"
-			}
-		],
-		"name": "setHouseFeePercentage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawFees",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
 ]

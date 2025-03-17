@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,22 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 const constractId = "0xA0b8C076d6dB3F355DedA352b5098f4a8E1A5B9F";
+import { abi, CONTRACT_ADDRESS } from "@/contracts/abi/mines.abi";
+import { useWriteContract, useAccount } from "wagmi";
+import { parseEther } from "viem";
+import { config, coreDaoTestnet } from "@/lib/config";
+import { writeContract, readContract } from "@wagmi/core";
+import { switchChain } from "@wagmi/core";
+import { debounce } from "lodash"; // Add this import
+
 const BetPanel = () => {
   const [betAmount, setBetAmount] = useState<string>("");
   const [mineCount, setMineCount] = useState<string>("0");
   const [profitMultiplier, setProfitMultiplier] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { wallet } = useWallet();
+
+  // const { writeContract } = useWriteContract();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -27,7 +37,7 @@ const BetPanel = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!wallet.isConnected) {
       toast.error("Please connect your wallet first");
       return;
@@ -45,16 +55,30 @@ const BetPanel = () => {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Bet placed successfully!", {
-        description: `You've placed a ${mineCount} difficulty bet of ${betAmount} TCORE`,
-      });
-      setBetAmount("");
-      setIsSubmitting(false);
-    }, 1500);
-  };
+    await switchChain(config, { chainId: coreDaoTestnet.id });
 
+    const result = await writeContract(config, {
+      abi,
+      address: CONTRACT_ADDRESS,
+      functionName: "placeBet",
+      args: [mineCount],
+      chainId: coreDaoTestnet.id,
+      value: parseEther(betAmount.toString()),
+    });
+
+    console.log("Place Bet!: ", result);
+
+    setIsSubmitting(false);
+
+    // Simulate API call
+    // setTimeout(() => {
+    //   toast.success("Bet placed successfully!", {
+    //     description: `You've placed a ${mineCount} difficulty bet of ${betAmount} TCORE`,
+    //   });
+    //   setBetAmount("");
+    //   setIsSubmitting(false);
+    // }, 1500);
+  };
 
   useEffect(() => {
     let baseMultiplier = 1.0;
@@ -63,7 +87,6 @@ const BetPanel = () => {
     }
     setProfitMultiplier(baseMultiplier);
   }, [mineCount]);
-
 
   const potentialReturn = betAmount
     ? parseFloat(betAmount) * profitMultiplier
@@ -168,9 +191,28 @@ const BetPanel = () => {
     </div>
   );
 };
+// Define proper types for our game data
+interface Tile {
+  id: number;
+  clicked: boolean;
+  mine: boolean;
+}
+
+interface GameData {
+  betAmount: string;
+  mineCount: number;
+  seed: string;
+  revealedCount: number;
+  revealed: Array<{
+    actual_value: boolean;
+    isreveal: boolean;
+  }>;
+  active: boolean;
+  cashed: boolean;
+}
 
 function GameGrid() {
-  const [tiles, setTiles] = useState(
+  const [tiles, setTiles] = useState<Tile[]>(
     Array.from({ length: 25 }, (_, idx) => ({
       id: idx,
       clicked: false,
@@ -179,52 +221,197 @@ function GameGrid() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [gameData, setGameData] = useState<GameData | null>(null);
+  const [isGameActive, setIsGameActive] = useState(false);
+  const [cachedGameData, setCachedGameData] = useState(null);
+  const [lastFetchTime, setLastFetchTime] = useState(0);
+  const [loadingStartTime, setLoadingStartTime] = useState(0);
 
-  // Simulate fetching data from a Solidity contract.
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
+  const CACHE_DURATION = 3000; // 3 seconds
+  const MINIMUM_LOADING_TIME = 500; // ms
+
+  const account = useAccount();
+
+  // Function to fetch game data from the contract
+  const fetchGameData = useCallback(
+    async (force = false) => {
+      if (!account.address) return;
+
+      const now = Date.now();
+      if (!force && cachedGameData && now - lastFetchTime < CACHE_DURATION) {
+        return cachedGameData; // Use cached data if recent
+      }
+
+      setLoadingStartTime(now);
+      if (!gameData) setLoading(true); // Only show loading on initial load
+
       try {
-        // In your real implementation, replace this with a call to your solidity contract.
-        // use ethers.js:
-        // const provider = new ethers.providers.Web3Provider(window.ethereum);
-        // const contract = new ethers.Contract(contractAddress, abi, provider);
-        // const data = await contract.getMinesData();
-        // Then map the data to update the tiles state accordingly.
+        const result = await readContract(config, {
+          abi,
+          address: CONTRACT_ADDRESS,
+          functionName: "getGameStatus",
+          args: [account.address],
+        });
 
-        // For demonstration, we simulate a delay.
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Convert BigInt values to strings for JSON serialization
+        const processedResult = JSON.parse(
+          JSON.stringify(result, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          )
+        );
 
-        // If the contract returns game data, you can update the 'tiles' state here.
-        // For now, we simply use our initial dummy data.
+        console.log("getGameStatus:", processedResult);
+
+        // Only update state if data has changed
+        if (
+          !gameData ||
+          JSON.stringify(processedResult) !== JSON.stringify(gameData)
+        ) {
+          setGameData(processedResult);
+          setCachedGameData(processedResult);
+          setLastFetchTime(now);
+
+          // Update tiles based on contract data
+          if (processedResult && processedResult.revealed) {
+            setTiles((prev) => {
+              const needsUpdate = processedResult.revealed.some(
+                (tile: any, idx: any) =>
+                  tile.isreveal !== prev[idx].clicked ||
+                  tile.actual_value !== prev[idx].mine
+              );
+
+              if (!needsUpdate) return prev; // Skip update if no changes
+
+              return prev.map((tile, idx) => ({
+                ...tile,
+                clicked: processedResult.revealed[idx].isreveal,
+                mine: processedResult.revealed[idx].actual_value,
+              }));
+            });
+
+            setIsGameActive(processedResult.active);
+          }
+        }
+
+        // Ensure loading state shows for at least MINIMUM_LOADING_TIME
+        const loadingElapsed = Date.now() - loadingStartTime;
+        if (loadingElapsed < MINIMUM_LOADING_TIME) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, MINIMUM_LOADING_TIME - loadingElapsed)
+          );
+        }
+
+        setLoading(false);
+        return processedResult;
       } catch (err) {
         console.error("Error fetching game data:", err);
-        setError("Failed to load game data.");
-      }
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
 
-  // Optional: handle a tile click. This function can also trigger a
-  // transaction call to your Solidity contract if needed.
-  function handleTileClick(index: number) {
-    setTiles((prevTiles) =>
-      prevTiles.map((tile, idx) =>
-        idx === index ? { ...tile, clicked: true } : tile
-      )
-    );
+        // Wait minimum time even on error
+        const loadingElapsed = Date.now() - loadingStartTime;
+        if (loadingElapsed < MINIMUM_LOADING_TIME) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, MINIMUM_LOADING_TIME - loadingElapsed)
+          );
+        }
+
+        setLoading(false);
+        setError("Failed to load game data. Please try again.");
+        return null;
+      }
+    },
+    [account.address, gameData, cachedGameData, lastFetchTime]
+  );
+
+  // Create a debounced version of the fetch function
+  const debouncedFetchGameData = useCallback(
+    debounce((force = false) => {
+      fetchGameData(force);
+    }, 300),
+    [fetchGameData]
+  );
+
+  // Initial data fetch and polling setup
+  useEffect(() => {
+    // Initial fetch when component mounts
+    const initialFetch = async () => {
+      await fetchGameData(true); // Force initial fetch
+    };
+
+    initialFetch();
+
+    // Set up polling for updates
+    const intervalId = setInterval(() => {
+      // Only fetch if game is active
+      if (isGameActive) {
+        debouncedFetchGameData();
+      }
+    }, 5000); // Poll every 5 seconds when game is active
+
+    return () => {
+      clearInterval(intervalId); // Clean up interval on unmount
+    };
+  }, [fetchGameData, debouncedFetchGameData, isGameActive]);
+
+  // Handle tile click
+  async function handleTileClick(index: number) {
+    // Don't allow clicks if the game is not active
+    if (!isGameActive) {
+      console.log("Game is not active");
+      return;
+    }
+
+    // Don't allow clicks on already revealed tiles
+    if (tiles[index].clicked) {
+      console.log("Tile already revealed");
+      return;
+    }
+
+    try {
+      // Make sure we're on the right chain
+      await switchChain(config, { chainId: coreDaoTestnet.id });
+
+      // Call the contract to reveal the tile
+      const result = await writeContract(config, {
+        abi,
+        address: CONTRACT_ADDRESS,
+        functionName: "revealTile",
+        args: [index],
+        chainId: coreDaoTestnet.id,
+      });
+
+      console.log("revealTile transaction:", result);
+
+      // Optimistically update the UI
+      setTiles((prevTiles) =>
+        prevTiles.map((tile, idx) =>
+          idx === index ? { ...tile, clicked: true } : tile
+        )
+      );
+
+      // Wait a bit for the transaction to be processed before fetching updated state
+      setTimeout(() => {
+        fetchGameData(true); // Force fetch after tile reveal
+      }, 2000);
+    } catch (err) {
+      console.error("Error revealing tile:", err);
+      setError("Failed to reveal tile. Please try again.");
+    }
   }
 
-  if (loading) {
+  if (loading && !gameData) {
     return (
-      <div className="flex items-center justify-center h-full text-lg font-medium">
-        Loading game data...
+      <div className="grid grid-cols-5 gap-4 w-[90%] h-[90%] p-6">
+        {Array.from({ length: 25 }).map((_, index) => (
+          <div
+            key={index}
+            className="relative animate-pulse bg-gray-300 rounded-lg w-full h-full"
+          />
+        ))}
       </div>
     );
   }
 
-  if (error) {
+  if (error && !gameData) {
     return (
       <div className="flex items-center justify-center h-full text-red-500">
         {error}
@@ -238,27 +425,37 @@ function GameGrid() {
         <div
           key={tile.id}
           onClick={() => handleTileClick(idx)}
-          className="relative group"
+          className={`relative group ${
+            !isGameActive ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+          }`}
         >
           <div
-            className=" absolute inset-0 rounded-lg bg-tcore-blue-dark/80 transform translate-y-2 transition-transform duration-300 group-hover:-translate-y-0"
+            className="absolute inset-0 rounded-lg bg-tcore-blue-dark/80 transform translate-y-2 transition-transform duration-300 group-hover:-translate-y-0"
             style={{ zIndex: 1 }}
           ></div>
           {/* Main Tile */}
           <div
             className={`relative z-10 w-full h-full flex items-center justify-center rounded-lg transition-transform duration-300 ${
               tile.clicked
-                ? "bg-tcore-blue/60"
+                ? tile.mine
+                  ? "bg-red-500" // Mine
+                  : "bg-green-500" // Safe tile
                 : "bg-tcore-blue hover:bg-tcore-blue hover:-translate-y-2"
             }`}
           >
-            {tile.clicked && <span className="text-lg font-bold">✔</span>}
+            {tile.clicked && (
+              <span className="text-lg font-bold">
+                {tile.mine ? "💣" : "💎"}
+              </span>
+            )}
           </div>
         </div>
       ))}
     </div>
   );
 }
+
+// export default GameGrid;
 
 export default function Mines() {
   return (
