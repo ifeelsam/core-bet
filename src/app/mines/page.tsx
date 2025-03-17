@@ -12,9 +12,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-const constractId = "0xA0b8C076d6dB3F355DedA352b5098f4a8E1A5B9F";
 import { abi, CONTRACT_ADDRESS } from "@/contracts/abi/mines.abi";
-import { useWriteContract, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import { parseEther } from "viem";
 import { config, coreDaoTestnet } from "@/lib/config";
 import { writeContract, readContract } from "@wagmi/core";
@@ -275,7 +274,7 @@ function GameGrid() {
           if (processedResult && processedResult.revealed) {
             setTiles((prev) => {
               const needsUpdate = processedResult.revealed.some(
-                (tile: any, idx: any) =>
+                (tile: { isreveal: boolean; actual_value: boolean; }, idx: number) =>
                   tile.isreveal !== prev[idx].clicked ||
                   tile.actual_value !== prev[idx].mine
               );
