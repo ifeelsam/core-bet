@@ -54,7 +54,7 @@ export const config = createConfig({
     transports: {
         [mainnet.id]: http(),
         [coreDao.id] : http(),
-        [coreDaoTestnet1.id]: http(),
+        [coreDaoTestnet.id]: http(),
         [coreDaoTestnet.id]: http()
     }
 
