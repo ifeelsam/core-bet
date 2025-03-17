@@ -2,6 +2,7 @@
 import BetPanel from "@/components/BetPanel";
 import Footer from "@/components/Footer";
 import GamePlaceholder from "@/components/GamePlaceholder";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Page() {
@@ -60,11 +61,13 @@ export default function Page() {
                   Featured Games
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <Link href={"/mines"}>
                   <GamePlaceholder
-                    title="Game 1"
+                    title="Mines"
                     index={0}
-                    onSelect={() => handleGameSelect("Game 1")}
+                    onSelect={() => handleGameSelect("Mines")}
                   />
+                  </Link>
                   <GamePlaceholder
                     title="Game 2"
                     index={1}
