@@ -175,7 +175,7 @@ export default function Mines() {
           if (processedResult && processedResult.revealed) {
             setTiles((prev) => {
               const needsUpdate = processedResult.revealed.some(
-                (tile: any, idx: number) =>
+                (tile: { isreveal: boolean; actual_value: boolean; }, idx: number) =>
                   tile.isreveal !== prev[idx].clicked ||
                   tile.actual_value !== prev[idx].mine
               );
