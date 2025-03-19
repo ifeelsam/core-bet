@@ -8,8 +8,8 @@ contract MinesGame is Ownable, ReentrancyGuard {
     uint8 public constant GRID_SIZE = 25;
     uint8 public constant MAX_MINES = 24;
 
-    uint16 public houseFeePercentage = 50; // 0.5% with 2 decimals
-    uint16 public constant MAX_FEE = 1000; // Max 10%
+    uint16 public houseFeePercentage = 50;
+    uint16 public constant MAX_FEE = 1000;
 
     struct Tile {
         bool actual_value; // true = mine, false = safe
